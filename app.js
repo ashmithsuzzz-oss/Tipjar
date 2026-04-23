@@ -70,16 +70,19 @@ function sendTip(amount) {
             state,
             function (resp) {
 
-                if (resp.pending) {
+               if (resp.pending) {
 
-                    setTimeout(() => {
-                        status.innerText = "✅ Connected";
-                        showSuccess();
-                    }, 4000);
+    status.innerText = "⏳ Approve in MiniMask...";
 
-                } else {
-                    status.innerText = "❌ Error";
-                }
+} else if (resp.success) {
+
+    status.innerText = "✅ Tip Sent!";
+    showSuccess();
+
+} else {
+
+    status.innerText = "❌ Transaction Failed";
+               }
             }
         );
     });
