@@ -1,14 +1,7 @@
-// ===============================
-// CONFIG
-// ===============================
 const ADDRESS = "MxG086HDR94WWW3ZJE24E807D5SQ7F5WUDQFNN9N221P89D698ZET9YK8832YJQ";
 
 let status;
 
-
-// ===============================
-// WALLET EXTRACT (your method)
-// ===============================
 function getWalletAddress(res) {
     if (!res || !res.status) return null;
 
@@ -20,10 +13,6 @@ function getWalletAddress(res) {
     return null;
 }
 
-
-// ===============================
-// INIT
-// ===============================
 window.onload = function () {
 
     status = document.getElementById("status");
@@ -31,8 +20,6 @@ window.onload = function () {
     if (typeof MINIMASK !== "undefined") {
 
         MINIMASK.init(function (msg) {
-
-            console.log("MiniMask:", msg);
 
             if (msg.event === "MINIMASK_INIT") {
 
@@ -50,10 +37,16 @@ window.onload = function () {
     }
 };
 
+function showSuccess() {
+    const popup = document.getElementById("successPopup");
 
-// ===============================
-// SEND TIP
-// ===============================
+    popup.classList.remove("hidden");
+
+    setTimeout(() => {
+        popup.classList.add("hidden");
+    }, 2500);
+}
+
 function sendTip(amount) {
 
     MINIMASK.account.getAddress(function (res) {
@@ -65,11 +58,10 @@ function sendTip(amount) {
             return;
         }
 
-        // optional message
         const state = {};
         state[0] = "tip";
 
-        console.log("Sending tip:", amount);
+        status.innerText = "⏳ Waiting...";
 
         MINIMASK.account.send(
             amount,
@@ -78,14 +70,29 @@ function sendTip(amount) {
             state,
             function (resp) {
 
-                console.log("Response:", resp);
-
                 if (resp.pending) {
-                    status.innerText = "⏳ Approve in MiniMask...";
+
+                    setTimeout(() => {
+                        status.innerText = "✅ Connected";
+                        showSuccess();
+                    }, 4000);
+
                 } else {
-                    status.innerText = "❌ Error sending tip";
+                    status.innerText = "❌ Error";
                 }
             }
         );
     });
+}
+
+function sendCustom() {
+
+    const val = document.getElementById("customAmount").value;
+
+    if (!val || isNaN(val)) {
+        alert("Enter valid amount");
+        return;
+    }
+
+    sendTip(parseFloat(val));
 }
